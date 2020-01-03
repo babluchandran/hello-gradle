@@ -5,12 +5,10 @@ pipeline {
     options { buildDiscarder(logRotator(numToKeepStr: '10')) }
 		environment {
 			SONAR_FLAG = '-Dsonar.host.url=http://13.127.220.12:9000 -Dsonar.analysis.mode= -Dsonar.report.export.path=sonar-report.json'
+			radle = '/opt/gradle/gradle-3.4.1/bin'
 			//NEXUS_FLAG = 'nexusPublisher nexusInstanceId: 'localNexus', nexusRepositoryId: 'releases', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/sampledemo-1.0.jar']], mavenCoordinate: [artifactId: 'jenkins-war', groupId: 'techm.cadt.com', packaging: 'jar', version: '2.00']]]'
 			}
 	
-	    tools {
-            maven "M3"
-        }
 	
     stages {
         stage('Checkout SCM') {
@@ -21,27 +19,20 @@ pipeline {
             }
         }
 		
-		stage('Maven Build') {
+		stage('Gradle Build') {
             steps {
                 script {
-                    sh "mvn clean install"
-                    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+                    sh "${gradle}/gradle build"
+                    
 				}
             }
         }
         
-		stage('Unit Test') {
-            steps {
-                script {
-                    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])                            
-				}
-            }
-        }
 		
 		stage('Sonar') {
             steps {
                 script {
-                    sh "mvn clean package sonar:sonar ${SONAR_FLAG}"                            
+                    sh "${gradle}/gradle sonarqube ${SONAR_FLAG}"                            
 				}
             }
         }
@@ -49,8 +40,8 @@ pipeline {
 		stage('Cobertura') {
             steps {
                 script {
-                    sh "mvn cobertura:cobertura"
-		            step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+                    sh "${gradle}/gradle cobertura"
+		     step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
 				}
             }
         }

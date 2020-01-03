@@ -13,113 +13,41 @@ pipeline {
         }
 	
     stages {
-        stage('Checkout SCM') {
+        stage('Approval') {
+            steps {
+                script {
+                    input(id: "Deploy Gate", message: "Deploy ?", ok: 'Deploy')                          
+		}
+              }
+          }
+	    
+	stage('Checkout SCM') {
             steps {
                 script {
                     checkout scm                            
 				}
             }
-        }
-		
-		stage('Maven Build') {
-            steps {
-                script {
-                    sh "mvn clean install"
-                    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-				}
-            }
-        }
+        }  
         
-		stage('Unit Test') {
-            steps {
-                script {
-                    step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])                            
-				}
-            }
-        }
-		
-		stage('Sonar') {
-            steps {
-                script {
-                    sh "mvn clean package sonar:sonar ${SONAR_FLAG}"                            
-				}
-            }
-        }
-
-		stage('Cobertura') {
-            steps {
-                script {
-                    sh "mvn cobertura:cobertura"
-		            step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/target/site/cobertura/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
-				}
-            }
-        }
-		
-		stage('Push to Nexus') {
-            steps {
-                script {
-                    //sh "mvn deploy -DaltDeploymentRepository=thirdparty::default::http://nexus-ose-cicdtools.apps.techm.name/nexus/content/repositories/thirdparty"
-		            nexusPublisher nexusInstanceId: 'localNexus', nexusRepositoryId: 'releases', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: '/home/ubuntu/SampleWebApp.war']], mavenCoordinate: [artifactId: 'sample-war', groupId: 'techm.nissan.com', packaging: 'war', version: '$BUILD_NUMBER']]]
-				}
-            }
-        }
-	    
-          
-		stage('Docker Build Image') {
-            steps {
-                script {
-                    app = docker.build("techmid/mong")                            
-				}
-            }
-        }
-        
-		stage('Docker Push Image') {
-            steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com','dockerID') {
-                    app.push("${env.BUILD_NUMBER}")                            
-				    }
-                }
-            }
-        }
-        
-        stage('Approval') {
-            steps {
-                script {
-                    input "continue to deploy?"                            
-				}
-            }
-        }
-        
-		stage('Docker Deploy Image') {
-            steps {
-                script {
-                    ansiblePlaybook extras: '-e version=$BUILD_NUMBER',  installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: '/home/ubuntu/nissan_genx.yml' 
-				}
-            }
-        }
     }
+	    
     
-    
-    
-    
-    
-    
-    
-    
-    
-    post {
+	
+	
+	post {
         success {
-             mail to: 'BC00434278@techmahindra.com',
-             subject: "Success Pipeline: ${currentBuild.fullDisplayName}",
-             body: "Pipelien ${env.BUILD_NUMBER} passed "
+            emailext mimeType: 'text/html',
+        	body: '${FILE,path="**/index.html"}', 
+        	subject: 'Selenium: Job '${env.JOB_NAME}' Status: currentBuild.result, 
+        	to: bc00434278@techmahindra.com
            } 
            
         failure {
-             mail to: 'BC00434278@techmahindra.com',
-             subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-             body: "Something is wrong with ${env.BUILD_URL}"
+	   emailext mimeType: 'text/html',
+       		 body: '${FILE,path="**/index.html"}', 
+        	 subject: 'Selenium: Job '${env.JOB_NAME}' Status: currentBuild.result, 
+        	 to: bc00434278@techmahindra.com
            } 
 	}
-
-}   
+	    
+}

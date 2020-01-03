@@ -5,7 +5,7 @@ pipeline {
     options { buildDiscarder(logRotator(numToKeepStr: '10')) }
 		environment {
 			SONAR_FLAG = '-Dsonar.host.url=http://13.127.220.12:9000 -Dsonar.analysis.mode= -Dsonar.report.export.path=sonar-report.json'
-			radle = '/opt/gradle/gradle-3.4.1/bin'
+			gradle = '/opt/gradle/gradle-3.4.1/bin'
 			//NEXUS_FLAG = 'nexusPublisher nexusInstanceId: 'localNexus', nexusRepositoryId: 'releases', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/sampledemo-1.0.jar']], mavenCoordinate: [artifactId: 'jenkins-war', groupId: 'techm.cadt.com', packaging: 'jar', version: '2.00']]]'
 			}
 	

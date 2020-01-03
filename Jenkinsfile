@@ -33,7 +33,7 @@ pipeline {
 	stage('Gradle Build') {
             steps {
                 script {
-			sh "${gradle} build" 
+			sh "${gradle}/gradle build" 
 				}
             }
         } 

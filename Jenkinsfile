@@ -38,14 +38,14 @@ pipeline {
         success {
             emailext mimeType: 'text/html',
         	body: '${FILE,path="**/index.html"}', 
-        	subject: 'Selenium: Job '${env.JOB_NAME}' Status: currentBuild.result, 
+        	subject: 'Selenium: ', 
         	to: bc00434278@techmahindra.com
            } 
            
         failure {
 	   emailext mimeType: 'text/html',
        		 body: '${FILE,path="**/index.html"}', 
-        	 subject: 'Selenium: Job '${env.JOB_NAME}' Status: currentBuild.result, 
+        	 subject: 'Selenium: Job', 
         	 to: bc00434278@techmahindra.com
            } 
 	}

@@ -2,7 +2,7 @@
 
 pipeline {
     agent {label "master"}
-    options { buildDiscarder(logRotator(numToscannerHome = tool 'SonarQubeScanner'KeepStr: '10')) }
+    options { buildDiscarder(logRotator(numToKeepStr: '10')) }
 		environment {
 			SONAR_FLAG = '-Dsonar.host.url=http://13.231.194.154:9000/ -Dsonar.analysis.mode= -Dsonar.report.export.path=sonar-report.json'
 			gradle = '/opt/gradle/gradle-3.4.1/bin'

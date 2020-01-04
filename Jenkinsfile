@@ -2,11 +2,11 @@
 
 pipeline {
     agent {label "master"}
-    options { buildDiscarder(logRotator(numToscannerHome = tool 'SonarQube Scanner 3.2.0.1227'KeepStr: '10')) }
+    options { buildDiscarder(logRotator(numToscannerHome = tool 'SonarQubeScanner'KeepStr: '10')) }
 		environment {
 			SONAR_FLAG = '-Dsonar.host.url=http://13.231.194.154:9000/ -Dsonar.analysis.mode= -Dsonar.report.export.path=sonar-report.json'
 			gradle = '/opt/gradle/gradle-3.4.1/bin'
-			scannerHome = tool 'SONAR'
+			//scannerHome = tool 'SonarQubeScanner'
 			//NEXUS_FLAG = 'nexusPublisher nexusInstanceId: 'localNexus', nexusRepositoryId: 'releases', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/sampledemo-1.0.jar']], mavenCoordinate: [artifactId: 'jenkins-war', groupId: 'techm.cadt.com', packaging: 'jar', version: '2.00']]]'
 			}
 

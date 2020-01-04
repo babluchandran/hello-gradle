@@ -39,7 +39,7 @@ pipeline {
                     //sh "${gradle}/gradle sonarqube ${SONAR_FLAG}"                            
 				}
             }
-        }
+        
 
 		stage('Cobertura') {
             steps {
@@ -94,6 +94,7 @@ pipeline {
             }
         }
     }
+    
     
     
     

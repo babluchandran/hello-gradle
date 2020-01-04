@@ -22,7 +22,7 @@ pipeline {
 		stage('Gradle Build') {
             steps {
                 script {
-                    sh "${gradle}/gradle build"
+                    sh "${gradle}/gradle build -Dsonar.projectKey=app"
                     
 				}
             }

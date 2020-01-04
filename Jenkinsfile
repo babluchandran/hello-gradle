@@ -8,6 +8,9 @@ pipeline {
 			gradle = '/opt/gradle/gradle-3.4.1/bin'
 			//NEXUS_FLAG = 'nexusPublisher nexusInstanceId: 'localNexus', nexusRepositoryId: 'releases', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/sampledemo-1.0.jar']], mavenCoordinate: [artifactId: 'jenkins-war', groupId: 'techm.cadt.com', packaging: 'jar', version: '2.00']]]'
 			}
+	tools{
+		
+	}
 	
 	
     stages {
@@ -32,7 +35,11 @@ pipeline {
 		stage('Sonar') {
             steps {
                 script {
-                    sh "${gradle}/gradle sonarqube ${SONAR_FLAG}"                            
+			def scannerHome = tool 'SONAR'
+			withSonarQubeEnv('SonarQube') {
+                    	sh "${scannerHome}/bin/sonar-scanner"
+                }
+                    //sh "${gradle}/gradle sonarqube ${SONAR_FLAG}"                            
 				}
             }
         }
